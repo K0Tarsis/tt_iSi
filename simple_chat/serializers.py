@@ -52,15 +52,21 @@ class ThreadMessagesSerializer(serializers.ModelSerializer):
 
 class MessageSerializer(serializers.ModelSerializer):
     sender = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    thread = serializers.PrimaryKeyRelatedField(queryset=Thread.objects.all(), many=False)
+    thread = serializers.PrimaryKeyRelatedField(read_only=True, many=False)
 
     class Meta:
         model = Message
         fields = ['id', 'thread', 'sender', 'text']
 
+    def create(self, validated_data):
+        """Automatically set thread from URL."""
+        thread_id = self.context["view"].kwargs["thread_id"]  # Get from URL
+        validated_data["thread"] = Thread.objects.get(id=thread_id)  # Fetch thread instance
+        return super().create(validated_data)
+
     def validate_sender(self, value):
         """Ensure sender is part of the thread."""
-        thread_id = self.initial_data.get('thread')
+        thread_id = self.context["view"].kwargs.get("thread_id")
         thread = Thread.objects.get(id=thread_id)
 
         if not thread or value not in thread.participants.all():

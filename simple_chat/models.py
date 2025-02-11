@@ -12,7 +12,7 @@ class Thread(models.Model):
 
     def clean(self):
         """Ensure a thread does not have more than 2 participants."""
-        if self.pk and self.participants.count() > 2:
+        if self.pk and self.participants.count() != 2:
             raise ValidationError("A thread can have at most 2 participants.")
 
     def save(self, *args, **kwargs):
