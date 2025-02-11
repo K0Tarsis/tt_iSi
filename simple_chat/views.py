@@ -40,30 +40,22 @@ class ThreadDeleteView(generics.DestroyAPIView):
         return Response({"message": "Thread deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
 
-class MessageListView(generics.ListAPIView):
-    """Retrieve messages for a thread."""
-    serializer_class = ThreadMessagesSerializer
+class MessageView(generics.ListCreateAPIView):
+    """Handles retrieving and creating messages."""
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        thread_id = self.kwargs['thread_id']
+        thread_id = self.kwargs["thread_id"]
         if self.request.user.is_superuser:
-            return Message.objects.filter(thread_id=thread_id).order_by('created')
-        else:
-            return Message.objects.filter(thread_id=thread_id, thread__participants=self.request.user).order_by('created')
+            return Message.objects.filter(thread_id=thread_id).order_by("created")
+        return Message.objects.filter(
+            thread_id=thread_id, thread__participants=self.request.user
+        ).order_by("created")
 
-class MessageCreateView(generics.CreateAPIView):
-    """Create message."""
-    serializer_class = MessageSerializer
-    permission_classes = [IsAuthenticated]
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(
-            data={"text": request.data['text'], "thread": request.data['thread'], "sender": request.user}
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return ThreadMessagesSerializer  # Read-only serializer
+        return MessageSerializer  # Write serializer
 
 
 class MarkMessageAsReadView(APIView):

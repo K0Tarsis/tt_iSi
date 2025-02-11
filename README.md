@@ -19,6 +19,12 @@ A simple messaging API built with Django REST Framework.
 
 ## Running Locally
 
+### Create virtual environment:
+``` python3 -m venv venv```
+
+### Activate venv:
+``` source '/path/to/venv/bin/activate'```
+
 ### Install dependencies:
 ``` pip install -r requirements.txt```
 
@@ -26,7 +32,7 @@ A simple messaging API built with Django REST Framework.
 ``` python manage.py migrate```
 
 ### Load data
-```p ython manage.py loaddata db_dump.json```
+```python manage.py loaddata db_dump.json```
 
 ### Create a superuser:
 ``` python manage.py createsuperuser```
