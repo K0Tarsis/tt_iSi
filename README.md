@@ -39,3 +39,5 @@ http://127.0.0.1:8000/swagger/
 
 http://127.0.0.1:8000/admin/
 
+## Endpoints:
+![Endpoints](./images/image1.png)
